@@ -1,8 +1,7 @@
 import turtle
 import random
-import math
-import time
 from enum import Enum
+import sorting_helper
 
 class STATES(Enum):
     START = 0
@@ -21,54 +20,26 @@ t = turtle.Turtle()
 t.ht()
 t.pensize(2)
 t.speed(0)
+screen.tracer(0)
 
-
-
-def get_list_max(_list):
-    maximum = -255
-        for num in _list:
-            if num > maximum:
-                maximum = num
-        return maximum
-
-class sorting_algorithm:
-    def __init__(self,unsorted_list,turt):
-        self.unsorted_list = unsorted_list
-        self.num_list = self.unsorted_list.copy()
-        self.drawn_list_buffer = {}
-        self.t = turt
-        self.max_bar_len = 500 #in pixels
-        self.max_val = get_list_max(self.unsorted_list)
-    
-    def send_num_to_buffer(self,num,idx):
-        if self.drawn_list_buffer[idx] != None:
-            print(f"overwritten value {self.drawn_list_buffer[idx]} at position {idx} in the list")
-        self.drawn_list_buffer[idx] = num
-    
-    def draw_list(self):
-        drawn_list = []
-        for i in range(len(self.unsorted_list)):
-            drawn_list.append(self.drawn_list_buffer[i])
-    
-    
-    def draw_bar(self,num,idx):
-        bar_len = int(round(float(num)/float(self.max_val) * self.max_bar_len))
-        horiz_offset = int(round(float(idx)/float(len(self.unsorted_list)))) - 
-        
-        
-        
-    
+class bubble_sort(sorting_helper.sorting_algorithm):
+    def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
+        super().__init__(unsorted_list, turt, screen)
+        self.pointer = 0
     def step(self):
-        print("no algorithm implemented")
-    
-    def check_sorted(self):
-        checked_list = self.num_list
-        for i in range(len(checked_list)-1):
-            if checked_list[i] > checked_list[i+1]:
-                return False
+        pass
         
-        return True
 
 
+
+
+submit_list = []
+
+for i in range(100):
+    submit_list.append(random.randint(1,50))
+
+test = bubble_sort(submit_list,t,screen)
+
+test.step()
 
 screen.mainloop()
