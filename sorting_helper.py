@@ -18,6 +18,12 @@ class sorting_algorithm:
 
         self.drawn_list_buffer = {}
 
+        self.step_delay = 0.005
+
+        self.step_count = 0
+        
+        self.solved = False
+
         self.t = turt
         self.screen = screen
         
@@ -27,22 +33,44 @@ class sorting_algorithm:
         self.max_val = get_list_max(self.unsorted_list)
         self.bar_width = (self.display_width/self.list_len)*0.8
 
+    def process(self):
+        if self.solved:
+            return
         
-    
-    def transfer_list_to_buffer(self,buffer_list):
-        print("cleared buffer")
+        self.step()
+        self.draw_list()
+
+    def recalculate_list_attributes(self):
+        self.list_len = len(self.num_list)
+        self.max_val = get_list_max(self.num_list)
+        self.bar_width = (self.display_width/self.list_len)*0.8
+
+
+    def transfer_list_to_buffer(self,buffer_list,green_list = [],red_list = []):
+        #print("cleared buffer")
         self.drawn_list_buffer = {}
         for i in range(len(buffer_list)):
-            self.send_num_to_buffer(buffer_list[i],i)
+            if i in green_list:
+                self.send_num_to_buffer(buffer_list[i],i,"green")
+            elif i in  red_list:
+                self.send_num_to_buffer(buffer_list[i],i, "red")
+            else:
+                self.send_num_to_buffer(buffer_list[i],i)
+        
 
-    def send_num_to_buffer(self,num,idx,col=""):
-        if self.drawn_list_buffer[idx] != None:
+    
+            
+
+    def send_num_to_buffer(self,num,idx,col="blue"):
+        if idx in self.drawn_list_buffer.keys():
             print(f"overwritten value {self.drawn_list_buffer[idx]} at position {idx} in the list")
 
         self.drawn_list_buffer[idx] = (num,col)
     
     def draw_list(self):
-        global screen
+        
+        self.t.clear()
+
         drawn_list = []
         for i in range(self.list_len):
             drawn_list.append(self.drawn_list_buffer[i])
