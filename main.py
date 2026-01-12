@@ -1,9 +1,10 @@
 import turtle
 import random
 import time
+import math
 from enum import Enum
 import sorting_helper
-import winsound
+
 
 class STATES(Enum):
     START = 0
@@ -19,6 +20,7 @@ state = STATES.START
 
 screen = turtle.Screen()
 t = turtle.Turtle()
+screen.screensize(600, 400, "lightblue")
 #t.color("black", "lime")
 t.ht()
 t.pensize(2)
@@ -106,8 +108,55 @@ class stalin_sort(sorting_helper.sorting_algorithm):
 
         self.transfer_list_to_buffer(self.num_list,green_list=self.green_list,red_list=[self.pointer])
         
-
-
+class merge_sort(sorting_helper.sorting_algorithm):
+    def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
+        super().__init__(unsorted_list, turt, screen)
+        self.job_pointer = 0
+        self.job_list = [(0,self.list_len,0)]
+    def get_job_list(self,job:tuple):
+        return_list = []
+        for i in range(job[1]):
+            return_list.append(self.num_list[0]+i)
+        return return_list
+    
+    def step(self):
+        current_job = self.job_list[self.job_pointer]
+        if current_job[2] == 0:
+            
+            prev_size = current_job[1]
+            a_size = int(math.ceil(prev_size/2))
+            b_size = prev_size - a
+            
+            a_start = current_job[0]
+            b_start = a_start + a_size
+            
+            
+            del self.job_list[self.job_pointer]
+            
+            self.job_list.insert(self.job_pointer, (b_start,b_size,b_size == 1))
+            self.job_list.insert(self.job_pointer, (a_start,a_size,a_size == 1))
+            
+            # render these changes
+        
+            
+        else:
+            if self.job_pointer + 1 != len(self.job_list-1):
+                if self.job_list[self.job_pointer + 1][2] == 1:
+                    #merge with the job to the right 
+                    pass
+                elif self.job_list[self.job_pointer + 1][2] == 0 and self.job_pointer != 0:
+                    #sets pointer to the job on the left
+                    pass
+                else:
+                    self.pointer += 1
+            
+            
+            
+            
+            
+        
+       
+    
 
 
         

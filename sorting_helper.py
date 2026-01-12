@@ -27,9 +27,9 @@ class sorting_algorithm:
         self.t = turt
         self.screen = screen
         
-        self.max_bar_len = 500 #in pixels
-        self.base_line = -400
-        self.display_width = 1000
+        self.max_bar_len = 300 #in pixels
+        self.base_line = -200
+        self.display_width = 500
         self.max_val = get_list_max(self.unsorted_list)
         self.bar_width = (self.display_width/self.list_len)*0.8
 
@@ -91,7 +91,7 @@ class sorting_algorithm:
     
     def draw_bar(self,num,idx,col):
         bar_len = int(round(float(num)/float(self.max_val) * self.max_bar_len))
-        horiz_offset_decimal = float(idx)/float(self.list_len)
+        horiz_offset_decimal = float(idx)/float(self.list_len-1)
         horiz_offset = (horiz_offset_decimal * self.display_width) - (self.display_width/2)
 
         self.t.color(col)
@@ -99,10 +99,12 @@ class sorting_algorithm:
         self.t.up()
         self.t.goto(int(round(horiz_offset+(self.bar_width/2))),self.base_line)
         self.t.down()
+        self.t.begin_fill()
         self.t.goto(int(round(horiz_offset-(self.bar_width/2))),self.base_line)
         self.t.goto(int(round(horiz_offset-(self.bar_width/2))),self.base_line+bar_len)
         self.t.goto(int(round(horiz_offset+(self.bar_width/2))),self.base_line+bar_len)
         self.t.goto(int(round(horiz_offset+(self.bar_width/2))),self.base_line)
+        self.t.end_fill()
         self.t.up()
         
         

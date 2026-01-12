@@ -1,0 +1,79 @@
+
+
+
+[5,1,7,2,7,2,9,4,8,1]
+
+[5,1,7,2,7] [2,9,4,8,1] 
+
+[5,1] [7,2,7] [2,9] [4,8,1]
+
+[5] [1] [7] [2,7] [2] [9] [4] [8,1]
+
+[5] [1] [7] [2] [7] [2] [9] [4] [8] [1]
+jobs = [(0,10,0)]
+jobs = [(0,5,0),(5,5,0)]
+jobs = [(0,2,0),(2,3,0),(5,5,0)]
+jobs = [(0,1,1),(1,1,1),(2,3,0),(5,5,0)]
+jobs = [(0,2,1),(2,3,0),(5,5,0)]
+jobs = [(0,2,1),(2,1,1),(3,2,0),(5,5,0)]
+jobs = [(0,2,1),(2,1,1),(3,1,1),(4,1,1),(5,5,0)]
+jobs = [(0,2,1),(2,1,1),(3,2,1),(5,5,0)]
+jobs = [(0,2,1),(2,3,1),(5,5,0)]
+jobs = [(0,5,1),(5,5,0)]
+jobs = [(0,5,1),(5,2,0),(7,3,0)]
+jobs = [(0,5,1),(5,1,1),(6,1,1),(7,3,0)]
+jobs = [(0,5,1),(5,2,1),(7,3,0)]
+jobs = [(0,5,1),(5,2,1),(7,3,0)]
+jobs = [(0,5,1),(5,2,1),(7,1,1),(8,2,0)]
+jobs = [(0,5,1),(5,2,1),(7,1,1),(8,1,1),(9,1,1)]
+jobs = [(0,5,1),(5,2,1),(7,1,1),(8,2,1)]
+jobs = [(0,5,1),(5,2,1),(7,3,1)]
+jobs = [(0,5,1),(5,5,1)]
+jobs = [(0,10,1)]
+
+rules:
+
+if the "job" at pointer is in divide mode, split the list in half (job[pointer][2].split)
+if the current pointer list length = 2 or 3, mark both of the split off lists as conquer and increase pointer by 1
+if the job to the left == itself or == itself-1 then join the lists and decrease pointer by 1
+if job[pointer][2] == 1 and job[pointer-1][1] > job[pointer][1] then pointer += 1
+
+
+
+p=0
+jobs = [(0,10,0)]
+jobs = [(0,5,0),(5,5,0)]
+jobs = [(0,3,0),(3,2,0),(5,5,0)]
+jobs = [(0,2,0),(2,1,1),(3,2,0),(5,5,0)]
+jobs = [(0,1,1),(1,1,1),(2,1,1),(3,2,0),(5,5,0)]
+jobs = [(0,2,1),(2,1,1),(3,2,0),(5,5,0)]
+jobs = [(0,2,1),(2,1,1),(3,2,0),(5,5,0)]
+jobs = [(0,3,1),(3,2,0),(5,5,0)]
+p=1
+jobs = [(0,3,1),(3,1,1),(4,1,1),(5,5,0)]
+jobs = [(0,3,1),(3,2,1),(5,5,0)]
+p=0 reset to p -= 1 to index errors when on the final step
+jobs = [(0,5,1),(5,5,0)]
+p=1
+jobs = [(0,5,1),(5,3,0),(8,2,0)]
+jobs = [(0,5,1),(5,2,0),(7,1,1),(8,2,0)]
+jobs = [(0,5,1),(5,1,1),(6,1,1),(7,1,1),(8,2,0)]
+jobs = [(0,5,1),(5,2,1),(7,1,1),(8,2,0)]
+jobs = [(0,5,1),(5,3,1),(8,2,0)]
+p=2
+jobs = [(0,5,1),(5,3,1),(8,1,1),(9,1,1)]
+jobs = [(0,5,1),(5,3,1),(8,2,1)]
+p = 1
+jobs = [(0,5,1),(5,5,1)]
+p=0
+jobs = [(0,10  ,1)]
+
+
+
+new rules:
+
+if the current job is in divide mode (current_job[2] == 0) split
+if current job is in conquer mode (current_job[2] == 1) attempt to merge with the job to the right
+elif there is no job to merge with to the right and pointer != 0, (rule 2 == failed) pointer -= 1
+else pointer += 1
+
