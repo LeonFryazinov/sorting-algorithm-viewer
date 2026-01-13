@@ -3,10 +3,10 @@ import random
 import time
 import math
 from enum import Enum
-import sorting_helper
+import sorting_helper # custom script holding the parent class "sorting_algorithm"
 
 
-class STATES(Enum):
+class STATES(Enum): #states enum, for future graphical interface
     START = 0
     RUNNING = 1
     RUNNING_STEP = 2
@@ -17,7 +17,7 @@ class STATES(Enum):
 state = STATES.START
 
 
-
+#init turtle
 screen = turtle.Screen()
 t = turtle.Turtle()
 screen.screensize(600, 400, "lightblue")
@@ -29,13 +29,13 @@ screen.tracer(0)
 
 
 
-class bubble_sort(sorting_helper.sorting_algorithm):
+class bubble_sort(sorting_helper.sorting_algorithm): 
     def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
         super().__init__(unsorted_list, turt, screen)
-        self.pointer = 0
-        self.solved_amount = 0
+        self.pointer = 0 # a variable that holds the index of the item being compared
+        self.solved_amount = 0 # bubble sort ensures that the final n numbers are solved (where n is the current pass) so they dont have to be itterated
 
-    def create_decsending_list(self,total_items:int,items:int):
+    def create_decsending_list(self,total_items:int,items:int): # a function for getting the final n numbers for easy colouring 
         decsend_list = []
         for i in range(items):
             decsend_list.append(total_items-i)
@@ -43,7 +43,7 @@ class bubble_sort(sorting_helper.sorting_algorithm):
         return decsend_list
         
     
-    def create_acsending_list(self,num):
+    def create_acsending_list(self,num):  # just the range() function but creates a list instead of an iterable object
         returned_list = []
         for i in range(num):
             returned_list.append(i)
@@ -52,37 +52,38 @@ class bubble_sort(sorting_helper.sorting_algorithm):
 
 
     def step(self):
-        if self.list_len < 2:
+        if self.list_len < 2: # if the list has less than 2 items, it is already solved, instantly set solved to true
             self.solved = True
             if self.list_len == 1:
-                self.transfer_list_to_buffer(self.num_list,green_list=[0])
+                self.transfer_list_to_buffer(self.num_list,green_list=[0]) # display the solved list
                 return
 
 
-        if self.pointer == (self.list_len-1)-self.solved_amount:
+        if self.pointer == (self.list_len-1)-self.solved_amount: #returns the pointer back to the start if it has reached the end of the list.
             self.solved_amount += 1
-            if self.solved_amount == self.list_len-1:
-                print("solved")
+            if self.solved_amount == self.list_len-1: # if the amount of solved numbers = the amount of numbers in list, then it is solved
+                #print("solved")
                 self.solved = True
                 green_list = self.create_acsending_list(self.list_len)
-                self.transfer_list_to_buffer(self.num_list,green_list=green_list,red_list=[self.pointer,self.pointer+1])
+                self.transfer_list_to_buffer(self.num_list,green_list=green_list)
                 return
             
             self.pointer = 0
         
-        if self.num_list[self.pointer] > self.num_list[self.pointer+1]:
+        if self.num_list[self.pointer] > self.num_list[self.pointer+1]: # if l(s) > l(s+1) then they have to be swapped
             temp = self.num_list[self.pointer]
             self.num_list[self.pointer] = self.num_list[self.pointer+1]
             self.num_list[self.pointer+1] = temp
         
-        green_list = self.create_decsending_list(self.list_len-1,self.solved_amount)
+        green_list = self.create_decsending_list(self.list_len-1,self.solved_amount) # the list of indexes that have been solved, then display that
 
 
-        self.transfer_list_to_buffer(self.num_list,green_list=green_list,red_list=[self.pointer,self.pointer+1])
+        self.transfer_list_to_buffer(self.num_list,green_list=green_list,red_list=[self.pointer,self.pointer+1]) # function that displays the list
+        
         self.pointer += 1
         self.step_count += 1
         
-class stalin_sort(sorting_helper.sorting_algorithm):
+class stalin_sort(sorting_helper.sorting_algorithm): #the well loved stalin sort
     def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
         super().__init__(unsorted_list, turt, screen)
         self.pointer = 1
@@ -90,21 +91,20 @@ class stalin_sort(sorting_helper.sorting_algorithm):
         self.step_delay = 0.5
 
     def step(self):
-        global gun_sound
+        
         if self.pointer == self.list_len:
             self.solved = True
             return
 
 
-        if self.num_list[self.pointer] < self.num_list[self.pointer-1]:
+        if self.num_list[self.pointer] < self.num_list[self.pointer-1]: # if the next number is smaller than the last, then delete if from the list.
 
             del self.num_list[self.pointer]
-            
-            self.recalculate_list_attributes()
+             
+            self.recalculate_list_attributes() # recalculate the width of the visual bars
         else:
             self.green_list.append(self.pointer)
             self.pointer += 1
-        
 
         self.transfer_list_to_buffer(self.num_list,green_list=self.green_list,red_list=[self.pointer])
         
@@ -113,16 +113,53 @@ class merge_sort(sorting_helper.sorting_algorithm):
         super().__init__(unsorted_list, turt, screen)
         self.job_pointer = 0
         self.job_list = [(0,self.list_len,0)]
-    def get_job_list(self,job:tuple):
+        self.currently_solving = False
+        self.solve_list_a = []
+        self.solve_list_b = []
+        self.solved_temp = []
+    def get_job_list(self,job:tuple): #gets a snippet of the list, based on this tuple structure (start index, size of snippet inclusive of first index)
         return_list = []
         for i in range(job[1]):
-            return_list.append(self.num_list[0]+i)
+            return_list.append(self.num_list[job[0]+i])
         return return_list
     
+    def replace_list(main_list,secondary_list,start_index):
+        for i in range(len(secondary_list)):
+            main_list[start_index+i] = secondary_list[i]
+        
+        return main_list
+    
     def step(self):
-        current_job = self.job_list[self.job_pointer]
-        if current_job[2] == 0:
-            
+        current_job = self.job_list[self.job_pointer] # to emulate the function stacking in the normal merge sort, i am using a dynamic job list that works from left to right to divide the "jobs" into smaller jobs, merge them, then solve.
+        if self.currently_solving: #this will run when in the process of merging two smaller lists, stored in self.solve_listA/B
+            if len(self.solve_list_a) != 0 and len(self.solve_list_b) != 0:
+                if self.solve_list_a[0] < self.solve_list_b[0]:
+                    self.solved_temp.append(self.solve_list_a[0])
+                    del self.solve_list_a[0]
+                else:
+                    self.solved_temp.append(self.solve_list_b[0])
+                    del self.solve_list_b[0]
+            else:
+                if len(self.solve_list_a) > len(self.solve_list_b):
+                    self.solved_temp.append(self.solve_list_a[0])
+                    del self.solve_list_a[0]
+                else:
+                    self.solved_temp.append(self.solve_list_b[0])
+                    del self.solve_list_b[0]
+                
+                
+                
+                self.currently_solving = False
+                
+                start_index = current_job[0]
+                
+                self.num_list = replace_list(self.num_list,self.solve_temp,start_index)
+                #break out of loop and insert the disconected list into the main list.
+        
+        
+        
+        if current_job[2] == 0: # a job can either be dividing or conquering signified by current_job[2] == 0 and current_job[2] == 1 respectivly.
+            #here we are dividing the job, until it reaches length 1 (current_job[1] = 1) meaning we set them to conquering mode
             prev_size = current_job[1]
             a_size = int(math.ceil(prev_size/2))
             b_size = prev_size - a
@@ -139,18 +176,31 @@ class merge_sort(sorting_helper.sorting_algorithm):
             # render these changes
         
             
-        else:
-            if self.job_pointer + 1 != len(self.job_list-1):
-                if self.job_list[self.job_pointer + 1][2] == 1:
-                    #merge with the job to the right 
-                    pass
-                elif self.job_list[self.job_pointer + 1][2] == 0 and self.job_pointer != 0:
-                    #sets pointer to the job on the left
-                    pass
+        else: # if  the current job is trying to merge
+            if self.job_pointer + 1 != len(self.job_list)-1: #if this is not the very right job
+                if self.job_list[self.job_pointer + 1][2] == 1:  #if the job on the right also wants to merge, it starts the merging process described on line 127
+                    self.currently_solving = True
+                    self.solve_list_a = self.get_job_list(self.job_list[self.pointer])
+                    self.solve_list_b = self.get_job_list(self.job_list[self.pointer+1])
+                    
+                    job_1 = self.job_list[self.job_pointer]
+                    job_2 = self.job_list[self.job_pointer+1]
+                    
+                    del self.job_list[self.job_pointer]
+                    del self.job_list[self.job_pointer]
+                    
+                    self.job_list.insert(self.job_pointer,(job_1[0],job_1[1]+job_2[1],1))
+                    
+                    #merge jobs
+                    
+                    
+                elif self.job_list[self.job_pointer + 1][2] == 0 and self.job_pointer != 0: # if cant merge with the job on the right
+                    self.job_pointer -= 1 # if the job_pointer is not on the very left (job_pointer = 0) then go right
                 else:
-                    self.pointer += 1
-            
-            
+                    self.job_pointer += 1 #if it cant merge and cant go left, it goes right
+            else:
+                pass
+                #solved?
             
             
             
@@ -166,7 +216,7 @@ not_true = False
 
 submit_list = []
 
-for i in range(20):
+for i in range(30):
     submit_list.append(random.randint(1,100))
 
 test = stalin_sort(submit_list,t,screen)
