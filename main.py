@@ -29,6 +29,7 @@ screen.tracer(0)
 
 
 
+
 class bubble_sort(sorting_helper.sorting_algorithm): 
     def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
         super().__init__(unsorted_list, turt, screen)
@@ -43,12 +44,7 @@ class bubble_sort(sorting_helper.sorting_algorithm):
         return decsend_list
         
     
-    def create_acsending_list(self,num):  # just the range() function but creates a list instead of an iterable object
-        returned_list = []
-        for i in range(num):
-            returned_list.append(i)
-        
-        return returned_list
+    
 
 
     def step(self):
@@ -64,7 +60,7 @@ class bubble_sort(sorting_helper.sorting_algorithm):
             if self.solved_amount == self.list_len-1: # if the amount of solved numbers = the amount of numbers in list, then it is solved
                 #print("solved")
                 self.solved = True
-                green_list = self.create_acsending_list(self.list_len)
+                green_list = sorting_helper.create_acsending_list(self.list_len)
                 self.transfer_list_to_buffer(self.num_list,green_list=green_list)
                 return
             
@@ -123,7 +119,7 @@ class merge_sort(sorting_helper.sorting_algorithm):
             return_list.append(self.num_list[job[0]+i])
         return return_list
     
-    def replace_list(main_list,secondary_list,start_index):
+    def replace_list(self,main_list,secondary_list,start_index):
         for i in range(len(secondary_list)):
             main_list[start_index+i] = secondary_list[i]
         
@@ -139,6 +135,26 @@ class merge_sort(sorting_helper.sorting_algorithm):
                 else:
                     self.solved_temp.append(self.solve_list_b[0])
                     del self.solve_list_b[0]
+                
+                
+                
+                green = []
+                green.append(current_job[0]+len(self.solved_temp))
+                green.append(current_job[0]+len(self.solved_temp)+len(self.solve_list_a))
+                
+                #render changes
+                render_list = []
+                render_list += self.num_list[:current_job[0]]
+                render_list += self.solved_temp
+                render_list += self.solve_list_a
+                render_list += self.solve_list_b
+                render_list += self.num_list[(current_job[0]+current_job[1]):]
+                self.transfer_list_to_buffer(render_list,red_list=green)
+                return
+                
+                
+                
+                
             else:
                 if len(self.solve_list_a) > len(self.solve_list_b):
                     self.solved_temp.append(self.solve_list_a[0])
@@ -153,7 +169,7 @@ class merge_sort(sorting_helper.sorting_algorithm):
                 
                 start_index = current_job[0]
                 
-                self.num_list = replace_list(self.num_list,self.solve_temp,start_index)
+                self.num_list = self.replace_list(self.num_list,self.solved_temp,start_index)
                 #break out of loop and insert the disconected list into the main list.
         
         
@@ -162,7 +178,7 @@ class merge_sort(sorting_helper.sorting_algorithm):
             #here we are dividing the job, until it reaches length 1 (current_job[1] = 1) meaning we set them to conquering mode
             prev_size = current_job[1]
             a_size = int(math.ceil(prev_size/2))
-            b_size = prev_size - a
+            b_size = prev_size - a_size
             
             a_start = current_job[0]
             b_start = a_start + a_size
@@ -180,8 +196,8 @@ class merge_sort(sorting_helper.sorting_algorithm):
             if self.job_pointer + 1 != len(self.job_list)-1: #if this is not the very right job
                 if self.job_list[self.job_pointer + 1][2] == 1:  #if the job on the right also wants to merge, it starts the merging process described on line 127
                     self.currently_solving = True
-                    self.solve_list_a = self.get_job_list(self.job_list[self.pointer])
-                    self.solve_list_b = self.get_job_list(self.job_list[self.pointer+1])
+                    self.solve_list_a = self.get_job_list(self.job_list[self.job_pointer])
+                    self.solve_list_b = self.get_job_list(self.job_list[self.job_pointer+1])
                     
                     job_1 = self.job_list[self.job_pointer]
                     job_2 = self.job_list[self.job_pointer+1]
@@ -199,8 +215,12 @@ class merge_sort(sorting_helper.sorting_algorithm):
                 else:
                     self.job_pointer += 1 #if it cant merge and cant go left, it goes right
             else:
-                pass
-                #solved?
+                self.solved = True
+                self.transfer_list_to_buffer(self.num_list,green_list=sorting_helper.create_acsending_list(self.list_len))
+                return
+        
+        
+        self.transfer_list_to_buffer(self.num_list)
             
             
             
@@ -219,7 +239,7 @@ submit_list = []
 for i in range(30):
     submit_list.append(random.randint(1,100))
 
-test = stalin_sort(submit_list,t,screen)
+test = merge_sort(submit_list,t,screen)
 
 last_frame_time = time.time()
 time_sum = 0.0

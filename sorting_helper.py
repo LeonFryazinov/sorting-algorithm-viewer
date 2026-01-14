@@ -7,6 +7,12 @@ def get_list_max(_list):
             maximum = num
     return maximum
 
+def create_acsending_list(num):  # just the range() function but creates a list instead of an iterable object
+        returned_list = []
+        for i in range(num):
+            returned_list.append(i)
+        
+        return returned_list
 
 
 class sorting_algorithm:
