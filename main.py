@@ -114,12 +114,16 @@ class merge_sort(sorting_helper.sorting_algorithm):
         self.solve_list_b = []
         self.solved_temp = []
     def get_job_list(self,job:tuple): #gets a snippet of the list, based on this tuple structure (start index, size of snippet inclusive of first index)
+        print("getting current job's list")
         return_list = []
         for i in range(job[1]):
             return_list.append(self.num_list[job[0]+i])
+        
+        print(f"job's list: {return_list}")
         return return_list
     
     def replace_list(self,main_list,secondary_list,start_index):
+        print(f"inserting a list at {start_index} index. \nmainlist:{main_list}\nsecondary list:{secondary_list}")
         for i in range(len(secondary_list)):
             main_list[start_index+i] = secondary_list[i]
         
