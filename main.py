@@ -79,6 +79,30 @@ class bubble_sort(sorting_helper.sorting_algorithm):
         
         self.pointer += 1
         self.step_count += 1
+class bogo_sort(sorting_helper.sorting_algorithm):
+    def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
+        super().__init__(unsorted_list, turt, screen)
+        self.red_list = sorting_helper.create_acsending_list(len(self.num_list))
+
+    def step(self):
+        if self.check_sorted():
+            self.solved = True
+            self.transfer_list_to_buffer(self.num_list,green_list=self.red_list)
+        random.shuffle(self.num_list)
+        print("list randomized")
+        self.transfer_list_to_buffer(self.num_list,red_list=self.red_list)
+
+class miracle_sort(sorting_helper.sorting_algorithm):
+    def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
+        super().__init__(unsorted_list, turt, screen)
+        self.red_list = sorting_helper.create_acsending_list(len(self.num_list))
+
+    def step(self):
+        if self.check_sorted():
+            self.solved = True
+            self.transfer_list_to_buffer(self.num_list,green_list=self.red_list)
+        self.transfer_list_to_buffer(self.num_list,red_list=self.red_list)
+        
         
 class stalin_sort(sorting_helper.sorting_algorithm): #the well loved stalin sort
     def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
@@ -213,7 +237,7 @@ class merge_sort(sorting_helper.sorting_algorithm):
         
         
         if current_job[2] == 0: # a job can either be dividing or conquering signified by current_job[2] == 0 and current_job[2] == 1 respectivly.
-            #here we are dividing the job, until it reaches length 1 (current_job[1] = 1) meaning we set them to conquering mode   
+            #here we are dividing the job, until it reaches length 1 (current_job[1] = 1) meaning we set them to conquering mode
 
             #print("divide")
             prev_size = current_job[1]
@@ -297,7 +321,7 @@ for i in range(100):
     submit_list.append(random.randint(1,300))
 
 print(submit_list)
-test = merge_sort(submit_list,t,screen)
+test = bogo_sort(submit_list,t,screen)
 
 last_frame_time = time.time()
 time_sum = 0.0
@@ -321,6 +345,7 @@ while True:
 
     if test.solved:
         print(test.num_list)
+        print("solved")
         break
 
 screen.mainloop()
