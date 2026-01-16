@@ -35,7 +35,7 @@ class sorting_algorithm:
         
         self.max_bar_len = 300 #in pixels
         self.base_line = -200
-        self.display_width = 500
+        self.display_width = 1000
         self.max_val = get_list_max(self.unsorted_list)
         self.bar_width = (self.display_width/self.list_len)*0.8
 
@@ -44,6 +44,7 @@ class sorting_algorithm:
             return
         
         self.step()
+        self.step_count += 1
         self.draw_list()
 
     def recalculate_list_attributes(self):
@@ -132,4 +133,5 @@ class sorting_algorithm:
             if checked_list[i] > checked_list[i+1]:
                 return False
         
+        print("true")
         return True

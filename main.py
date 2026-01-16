@@ -7,6 +7,7 @@ import is_rearranged
 import sorting_helper # custom script holding the parent class "sorting_algorithm"
 
 
+
 class STATES(Enum): #states enum, for future graphical interface
     START = 0
     RUNNING = 1
@@ -78,7 +79,7 @@ class bubble_sort(sorting_helper.sorting_algorithm):
         self.transfer_list_to_buffer(self.num_list,green_list=green_list,red_list=[self.pointer,self.pointer+1]) # function that displays the list
         
         self.pointer += 1
-        self.step_count += 1
+        
 class bogo_sort(sorting_helper.sorting_algorithm):
     def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
         super().__init__(unsorted_list, turt, screen)
@@ -310,18 +311,32 @@ class merge_sort(sorting_helper.sorting_algorithm):
     
 
 
+def init_sorting_algorithm(sorting_type,turtle_instance,screen_instance,length,custom_list=[]):
+    if len(custom_list) == 0:
+        submit_list = []
+        for i in range(length):
+            submit_list.append(random.randint(1,200))
+
+        new_sort = sorting_type(submit_list,turtle_instance,screen_instance)
+        return new_sort
+    else:
+        new_sort = sorting_type(custom_list,turtle_instance,screen_instance)
+        return new_sort
         
+        
+        
+    
 
-not_true = False
 
 
-submit_list = []
 
-for i in range(100):
-    submit_list.append(random.randint(1,300))
 
-print(submit_list)
-test = bogo_sort(submit_list,t,screen)
+
+
+current_sized = 10
+size_list = []
+step_count_list = []
+current_sort = init_sorting_algorithm(merge_sort,t,screen,current_sized)
 
 last_frame_time = time.time()
 time_sum = 0.0
@@ -332,20 +347,30 @@ while True:
     last_frame_time = current_time
     
     time_sum += dt
-    non_reset_time_sum += dt
+    #non_reset_time_sum += dt
 
     
 
-    if time_sum > test.step_delay:
+    if time_sum > current_sort.step_delay:
         #print("frame update")
-        test.process()
+        current_sort.process()
         time_sum = 0.0
         time.sleep(0.001)
 
 
-    if test.solved:
-        print(test.num_list)
+    if current_sort.solved:
+        #print(non_reset_time_sum)
+        size_list.append(current_sized)
+        step_count_list.append(current_sort.step_count)
+        
         print("solved")
-        break
+        if current_sized != 100:
+            break
+        current_sized += 10
+        current_sort = init_sorting_algorithm(merge_sort,t,screen,current_sized)
+        
+        
+
+
 
 screen.mainloop()
