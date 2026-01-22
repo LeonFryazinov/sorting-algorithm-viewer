@@ -51,7 +51,13 @@ class sorting_algorithm:
         self.list_len = len(self.num_list)
         self.max_val = get_list_max(self.num_list)
         self.bar_width = (self.display_width/self.list_len)*0.8
-
+    def replace_list(self,main_list,secondary_list,start_index):
+        #print(f"inserting a list at {start_index} index. \nmainlist:{main_list}\nsecondary list:{secondary_list}")
+        new_list = main_list.copy()
+        for i in range(len(secondary_list)):
+            new_list[start_index+i] = secondary_list[i]
+        #print(f"new list: {new_list}")
+        return new_list
 
     def transfer_list_to_buffer(self,buffer_list,green_list = [],red_list = []):
         #print("cleared buffer")

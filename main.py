@@ -5,7 +5,8 @@ import math
 from enum import Enum
 import is_rearranged
 import sorting_helper # custom script holding the parent class "sorting_algorithm"
-
+#import numpy as np
+#import mathplotlib.pyplot as plt
 
 
 class STATES(Enum): #states enum, for future graphical interface
@@ -89,9 +90,10 @@ class bogo_sort(sorting_helper.sorting_algorithm):
         if self.check_sorted():
             self.solved = True
             self.transfer_list_to_buffer(self.num_list,green_list=self.red_list)
-        random.shuffle(self.num_list)
-        print("list randomized")
-        self.transfer_list_to_buffer(self.num_list,red_list=self.red_list)
+        else:
+            random.shuffle(self.num_list)
+            #print("list randomized")
+            self.transfer_list_to_buffer(self.num_list,red_list=self.red_list)
 
 class miracle_sort(sorting_helper.sorting_algorithm):
     def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
@@ -148,13 +150,7 @@ class merge_sort(sorting_helper.sorting_algorithm):
         #print(f"job's list: {return_list}")
         return return_list
     
-    def replace_list(self,main_list,secondary_list,start_index):
-        #print(f"inserting a list at {start_index} index. \nmainlist:{main_list}\nsecondary list:{secondary_list}")
-        new_list = main_list.copy()
-        for i in range(len(secondary_list)):
-            new_list[start_index+i] = secondary_list[i]
-        #print(f"new list: {new_list}")
-        return new_list
+    
     
     def step(self):
         #print("step")
@@ -303,6 +299,79 @@ class merge_sort(sorting_helper.sorting_algorithm):
         
         
         self.transfer_list_to_buffer(self.num_list)
+class quick_sort(sorting_helper.sorting_algorithm):
+    def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
+        super().__init__(unsorted_list, turt, screen)       
+        self.job_list = [(0,self.list_len)]
+        self.job_pointer = 0
+        self.current_pivot = -1
+        self.pivot_left = []
+        self.pivot_right = []
+        self.job_num_list = []
+        self.fixed_pivots = [] #indicies of sorted pivots
+        self.currently_dividing = False
+        
+    def extract_list(self,start,length): 
+        return_list = []
+        for i in range(length):
+            return_list.append(self.num_list[start+i])
+        
+        return return_list
+        
+    def step(self):
+        if self.currently_dividing:
+            if len(self.job_num_list) != 1:
+                if self.job_num_list[0] > self.current_pivot:
+                    self.pivot_right.append(self.job_num_list[0])
+                else:
+                    self.pivot_left.append(self.job_num_list[0])
+                
+                del self.job_num_list[0]
+                
+                #display
+            else:
+                if self.job_num_list[0] > self.current_pivot:
+                    self.pivot_right.append(self.job_num_list[0])
+                else:
+                    self.pivot_left.append(self.job_num_list[0])
+                
+                del self.job_num_list[0]
+                self.currently_dividing = False
+                
+                
+                
+                if len(self.pivot_left) > 0:
+                    self.job_list.append((self.job_list[0],len(self.pivot_left)))
+                
+                if len(self.pivot_right) > 0:
+                    self.job_list.append((self.job_list[0]+len(self.pivot_left)+1,len(self.pivot_right)))
+                    
+                
+                sec_list = self.pivot_left
+                
+                
+                del self.job_list[0]
+                
+                 
+                
+        else:
+            if self.job_list[self.job_pointer][1] == 1:
+                # final pivot 
+                pass
+            else:
+                #select pivot
+                pivot_index = self.job_list[self.job_pointer][0]+math.floor(self.job_list[self.job_pointer][1]/2)
+                self.current_pivot = self.num_list[pivot_index]
+                self.currently_dividing = True
+                self.job_num_list = self.extract_list(self.self.job_list[self.job_pointer][0],self.self.job_list[self.job_pointer][0])
+                del self.job_num_list[pivot_index-self.job_list[self.job_pointer][0]]
+                
+                
+                
+                
+                
+                
+                
             
             
             
@@ -333,10 +402,10 @@ def init_sorting_algorithm(sorting_type,turtle_instance,screen_instance,length,c
 
 
 
-current_sized = 10
+current_sized = 20
 size_list = []
 step_count_list = []
-current_sort = init_sorting_algorithm(merge_sort,t,screen,current_sized)
+current_sort = init_sorting_algorithm(bogo_sort,t,screen,current_sized)
 
 last_frame_time = time.time()
 time_sum = 0.0
@@ -360,17 +429,17 @@ while True:
 
     if current_sort.solved:
         #print(non_reset_time_sum)
-        size_list.append(current_sized)
-        step_count_list.append(current_sort.step_count)
+        #size_list.append(current_sized)
+        #step_count_list.append(current_sort.step_count)
         
         print("solved")
-        if current_sized != 100:
-            break
-        current_sized += 10
-        current_sort = init_sorting_algorithm(merge_sort,t,screen,current_sized)
+        #if current_sized != 100:
+        print(f"step count: {current_sort.step_count}")
+        break
+        #current_sized += 10
+        #current_sort = init_sorting_algorithm(merge_sort,t,screen,current_sized)
         
         
-
 
 
 screen.mainloop()
