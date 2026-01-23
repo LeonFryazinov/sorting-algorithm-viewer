@@ -323,7 +323,9 @@ class quick_sort(sorting_helper.sorting_algorithm):
         return return_list
         
     def step(self):
+        
         current_job = self.job_list[self.job_pointer]
+        print(f"current job: {current_job}\ncurrent pivot: {self.current_pivot}\ncurrently dividing: {self.currently_dividing}\njob num list: {self.job_num_list}\nleft: {self.pivot_left}\nright: {self.pivot_right}\n\n\n\n")
         if self.currently_dividing:#
             split = None
             if len(self.job_num_list) != 1:
@@ -359,29 +361,42 @@ class quick_sort(sorting_helper.sorting_algorithm):
                 
                 
                 if len(self.pivot_left) > 0:
-                    self.job_list.append((self.job_num_list[0],len(self.pivot_left)))
+                    self.job_list.append((current_job[0],len(self.pivot_left)))
                 
                 if len(self.pivot_right) > 0:
-                    self.job_list.append((self.job_num_list[0]+len(self.pivot_left)+1,len(self.pivot_right)))
+                    self.job_list.append((current_job[0]+len(self.pivot_left)+1,len(self.pivot_right)))
                     
                 
                 sec_list = self.pivot_left
-                sec_list.append(self.current_pivot)
+                sec_list += [self.current_pivot]
                 sec_list += self.pivot_right
                 
                 self.offset = 0
 
                 self.num_list = self.replace_list(self.num_list,sec_list,current_job[0])
-                self.fixed_pivots.append(self.job_num_list[0]+len(self.pivot_left))
+                self.fixed_pivots.append(current_job[0]+len(self.pivot_left))
                 
                 del self.job_list[0]
+                red_list = []
+                precompute = current_job[0]+len(self.job_num_list[:math.ceil(self.init_len/2)-self.offset])+len(self.pivot_left)
+                red_list.append(precompute)
+                if split == "left":
+                    
+                    red_list.append(precompute-1)
+                    
+                else:
+                    precompute += len(self.pivot_right)
+                    red_list.append(precompute)
+
+                self.transfer_list_to_buffer(self.num_list,red_list=red_list,green_list=self.fixed_pivots)
                 
+                return
         
             working_list = self.job_num_list[:math.ceil(self.init_len/2)-self.offset]
             working_list += self.pivot_left
             working_list += [self.current_pivot]
             working_list += self.pivot_right
-            working_list = self.job_num_list[math.ceil(self.init_len/2)-self.offset:]
+            working_list += self.job_num_list[math.ceil(self.init_len/2)-self.offset:]
             display_list = self.replace_list(self.num_list,working_list,current_job[0])
 
             red_list = []
@@ -406,9 +421,12 @@ class quick_sort(sorting_helper.sorting_algorithm):
             pivot_index = self.job_list[self.job_pointer][0]+math.floor(self.job_list[self.job_pointer][1]/2)
             self.current_pivot = self.num_list[self.pivot_index]
             self.currently_dividing = True
-            self.job_num_list = self.extract_list(self.job_list[self.job_pointer][0],self.job_list[self.job_pointer][1])
+            self.job_num_list = self.extract_list(current_job[0],current_job[1])
+            print(self.pivot_index-current_job[0])
             del self.job_num_list[self.pivot_index-self.job_list[self.job_pointer][0]]
             self.init_len = len(self.job_num_list)
+            self.pivot_left.clear()
+            self.pivot_right.clear()
             self.transfer_list_to_buffer(self.num_list,green_list=self.fixed_pivots,red_list=[pivot_index])
                 
                 
