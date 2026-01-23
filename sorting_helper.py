@@ -53,6 +53,7 @@ class sorting_algorithm:
         self.bar_width = (self.display_width/self.list_len)*0.8
     def replace_list(self,main_list,secondary_list,start_index):
         #print(f"inserting a list at {start_index} index. \nmainlist:{main_list}\nsecondary list:{secondary_list}")
+        #print(f"first len: {len(main_list)}, second len: {len(secondary_list)}")
         new_list = main_list.copy()
         for i in range(len(secondary_list)):
             new_list[start_index+i] = secondary_list[i]

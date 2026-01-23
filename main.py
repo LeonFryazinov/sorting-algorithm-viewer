@@ -3,7 +3,7 @@ import random
 import time
 import math
 from enum import Enum
-#import is_rearranged
+import is_rearranged
 import sorting_helper # custom script holding the parent class "sorting_algorithm"
 #import numpy as np
 #import mathplotlib.pyplot as plt
@@ -307,7 +307,6 @@ class quick_sort(sorting_helper.sorting_algorithm):
         self.current_pivot = -1
         self.pivot_index = -1
         self.pivot_left = []
-        self.step_delay = 0.1
         self.pivot_right = []
         self.job_num_list = []
         self.fixed_pivots = [] #indicies of sorted pivots
@@ -323,10 +322,24 @@ class quick_sort(sorting_helper.sorting_algorithm):
         return return_list
         
     def step(self):
-        
+        if len(self.fixed_pivots) == self.list_len:
+            print("solved")
+            self.solved = True
+            self.transfer_list_to_buffer(self.num_list,green_list=self.fixed_pivots)
+            return
+            
         current_job = self.job_list[self.job_pointer]
-        print(f"current job: {current_job}\ncurrent pivot: {self.current_pivot}\ncurrently dividing: {self.currently_dividing}\njob num list: {self.job_num_list}\nleft: {self.pivot_left}\nright: {self.pivot_right}\n\n\n\n")
+        #print(f"jobs: {self.job_list}\ncurrent pivot: {self.current_pivot}\ncurrently dividing: {self.currently_dividing}\njob num list: {self.job_num_list}\nleft: {self.pivot_left}\nright: {self.pivot_right}\n\n\n\n")
         if self.currently_dividing:#
+            if len(self.job_num_list) == 0:
+                self.currently_dividing = False
+                self.fixed_pivots.append(current_job[0])
+                print(f"appened fixed point (final): {self.fixed_pivots[-1]}")
+
+                del self.job_list[0]
+                self.transfer_list_to_buffer(self.num_list,green_list=self.fixed_pivots)
+                return
+            
             split = None
             if len(self.job_num_list) != 1:
 
@@ -358,16 +371,19 @@ class quick_sort(sorting_helper.sorting_algorithm):
                 del self.job_num_list[0]
                 self.currently_dividing = False
                 
-                
+                print
                 
                 if len(self.pivot_left) > 0:
                     self.job_list.append((current_job[0],len(self.pivot_left)))
+                    #print(f"added job left: {(current_job[0],len(self.pivot_left))}")
                 
                 if len(self.pivot_right) > 0:
                     self.job_list.append((current_job[0]+len(self.pivot_left)+1,len(self.pivot_right)))
-                    
+                    #print(f"added job right: {(current_job[0]+len(self.pivot_left)+1,len(self.pivot_right))}")
+
+                #print(f"\nPIVOTS at end\nPivot:{self.current_pivot}\nLeft:{self.pivot_left}\nRight:{self.pivot_right}\n\n")
                 
-                sec_list = self.pivot_left
+                sec_list = self.pivot_left.copy()
                 sec_list += [self.current_pivot]
                 sec_list += self.pivot_right
                 
@@ -375,6 +391,7 @@ class quick_sort(sorting_helper.sorting_algorithm):
 
                 self.num_list = self.replace_list(self.num_list,sec_list,current_job[0])
                 self.fixed_pivots.append(current_job[0]+len(self.pivot_left))
+                print(f"appened fixed point (non final): {self.fixed_pivots[-1]}\n{self.pivot_left}")
                 
                 del self.job_list[0]
                 red_list = []
@@ -418,16 +435,18 @@ class quick_sort(sorting_helper.sorting_algorithm):
         else:
             
             #select pivot
-            pivot_index = self.job_list[self.job_pointer][0]+math.floor(self.job_list[self.job_pointer][1]/2)
+            self.pivot_index = self.job_list[self.job_pointer][0]+math.floor(self.job_list[self.job_pointer][1]/2)
+            #print(self.pivot_index)
+            #print(current_job)
             self.current_pivot = self.num_list[self.pivot_index]
             self.currently_dividing = True
             self.job_num_list = self.extract_list(current_job[0],current_job[1])
-            print(self.pivot_index-current_job[0])
-            del self.job_num_list[self.pivot_index-self.job_list[self.job_pointer][0]]
+            #print(self.pivot_index-current_job[0])
+            del self.job_num_list[self.pivot_index-current_job[0]]
             self.init_len = len(self.job_num_list)
             self.pivot_left.clear()
             self.pivot_right.clear()
-            self.transfer_list_to_buffer(self.num_list,green_list=self.fixed_pivots,red_list=[pivot_index])
+            self.transfer_list_to_buffer(self.num_list,green_list=self.fixed_pivots,red_list=[self.pivot_index])
                 
                 
                 
@@ -465,7 +484,7 @@ def init_sorting_algorithm(sorting_type,turtle_instance,screen_instance,length,c
 
 
 
-current_sized = 20
+current_sized = 50
 size_list = []
 step_count_list = []
 current_sort = init_sorting_algorithm(quick_sort,t,screen,current_sized)
