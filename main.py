@@ -5,8 +5,8 @@ import math
 from enum import Enum
 import is_rearranged
 import sorting_helper # custom script holding the parent class "sorting_algorithm"
-#import numpy as np
-#import mathplotlib.pyplot as plt
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 class STATES(Enum): #states enum, for future graphical interface
@@ -334,7 +334,7 @@ class quick_sort(sorting_helper.sorting_algorithm):
             if len(self.job_num_list) == 0:
                 self.currently_dividing = False
                 self.fixed_pivots.append(current_job[0])
-                print(f"appened fixed point (final): {self.fixed_pivots[-1]}")
+                #print(f"appened fixed point (final): {self.fixed_pivots[-1]}")
 
                 del self.job_list[0]
                 self.transfer_list_to_buffer(self.num_list,green_list=self.fixed_pivots)
@@ -371,7 +371,7 @@ class quick_sort(sorting_helper.sorting_algorithm):
                 del self.job_num_list[0]
                 self.currently_dividing = False
                 
-                print
+                #print
                 
                 if len(self.pivot_left) > 0:
                     self.job_list.append((current_job[0],len(self.pivot_left)))
@@ -391,7 +391,7 @@ class quick_sort(sorting_helper.sorting_algorithm):
 
                 self.num_list = self.replace_list(self.num_list,sec_list,current_job[0])
                 self.fixed_pivots.append(current_job[0]+len(self.pivot_left))
-                print(f"appened fixed point (non final): {self.fixed_pivots[-1]}\n{self.pivot_left}")
+                #print(f"appened fixed point (non final): {self.fixed_pivots[-1]}\n{self.pivot_left}")
                 
                 del self.job_list[0]
                 red_list = []
@@ -473,21 +473,11 @@ def init_sorting_algorithm(sorting_type,turtle_instance,screen_instance,length,c
     else:
         new_sort = sorting_type(custom_list,turtle_instance,screen_instance)
         return new_sort
-        
-        
-        
-    
 
-
-
-
-
-
-
-current_sized = 50
+current_sized = 20
 size_list = []
 step_count_list = []
-current_sort = init_sorting_algorithm(quick_sort,t,screen,current_sized)
+current_sort = init_sorting_algorithm(stalin_sort,t,screen,current_sized)
 
 last_frame_time = time.time()
 time_sum = 0.0
@@ -512,16 +502,16 @@ while True:
     if current_sort.solved:
         #print(non_reset_time_sum)
         #size_list.append(current_sized)
-        #step_count_list.append(current_sort.step_count)
+        #step_count_list.append(round(len(current_sort.num_list)/len(current_sort.unsorted_list),5)*100)
         
         print("solved")
-        #if current_sized != 100:
+        #if current_sized == 600:
         print(f"step count: {current_sort.step_count}")
         break
-        #current_sized += 10
-        #current_sort = init_sorting_algorithm(merge_sort,t,screen,current_sized)
-        
-        
+        #current_sized += 20
+        #current_sort = init_sorting_algorithm(stalin_sort,t,screen,current_sized)
 
-
+#x_plot = np.array(size_list)
+#y_plot = np.array(step_count_list)
+#plt.plot(x_plot,y_plot)
 screen.mainloop()
