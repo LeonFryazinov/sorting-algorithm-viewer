@@ -5,8 +5,7 @@ import math
 from enum import Enum
 import is_rearranged
 import sorting_helper # custom script holding the parent class "sorting_algorithm"
-#import numpy as np
-#import mathplotlib.pyplot as plt
+
 
 
 class STATES(Enum): #states enum, for future graphical interface
@@ -31,6 +30,43 @@ t.speed(0)
 screen.tracer(0)
 
 
+class Button:
+    def __init__(self, text, func, x, y, w, h, col1 = "black", col2 = "#ded0ca"):
+        self.text = text
+        self.func = func
+        self.x = x
+        self.y = y
+        self.width = w
+        self.height = h
+        self.col1 = col1
+        self.col2 = col2
+        
+    def mouse_click(self,mouse_x,mouse_y):
+        in_x_range = (self.x + self.width / 2) > mouse_x and (self.x - self.width / 2) < mouse_x
+        in_y_range = (self.y + self.height / 2) > mouse_y and (self.y - self.height / 2) < mouse_y
+        
+        if in_x_range and in_y_range:
+            self.func()
+    
+    def draw_button(self,t:turtle.Turtle):
+        t.up()
+        
+        t.color(self.col1,self.col2)
+        t.goto((self.x - self.width / 2),(self.y + self.height / 2)) # top left corner
+        t.begin_fill()
+        t.down()
+        t.goto((self.x + self.width / 2),(self.y + self.height / 2))#top right
+        t.goto((self.x + self.width / 2),(self.y - self.height / 2))#bottom right
+        t.goto((self.x - self.width / 2),(self.y - self.height / 2))#bottom left
+        t.goto((self.x - self.width / 2),(self.y + self.height / 2))#top left
+        t.end_fill()
+        t.up()
+        t.goto(self.x,self.y)
+        t.write(self.text, align="center")
+        t.up()
+        
+        
+         
 
 
 class bubble_sort(sorting_helper.sorting_algorithm): 
@@ -79,44 +115,7 @@ class bubble_sort(sorting_helper.sorting_algorithm):
 
         self.transfer_list_to_buffer(self.num_list,green_list=green_list,red_list=[self.pointer,self.pointer+1]) # function that displays the list
         
-        self.pointer += 1
-
-class insertion_sort(sorting_helper.sorting_algorithm): 
-    def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
-        super().__init__(unsorted_list, turt, screen)
-        #self.step_delay = 0.1
-        self.insert_target = 0
-        self.remaining = self.unsorted_list.copy()[1:]
-        self.num_list.clear()
-        self.num_list.append(self.unsorted_list[0])
-    def step(self):
-        if len(self.remaining) == 0:
-            self.solved = True
-            self.transfer_list_to_buffer(self.num_list, green_list=list(range(len(self.unsorted_list))))
-            return
-            
-        if self.remaining[0] < self.num_list[self.insert_target]:
-            self.num_list.insert(self.insert_target,self.remaining[0])
-            del self.remaining[0]
-            self.insert_target = 0
-        elif self.insert_target == len(self.num_list)-1:
-            self.num_list.append(self.remaining[0])
-            del self.remaining[0]
-            self.insert_target = 0
-        else:
-            self.insert_target += 1
-        
-        #print(f"{self.num_list.copy()}   {self.remaining.copy()}")
-        
-        display_list = self.num_list.copy() + self.remaining.copy()
-        self.transfer_list_to_buffer(display_list, red_list=[self.insert_target,len(self.num_list)])
-           
-        
-            
-        
-        
-
-        
+        self.pointer += 1       
 class bogo_sort(sorting_helper.sorting_algorithm):
     def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
         super().__init__(unsorted_list, turt, screen)
@@ -130,37 +129,6 @@ class bogo_sort(sorting_helper.sorting_algorithm):
             random.shuffle(self.num_list)
             #print("list randomized")
             self.transfer_list_to_buffer(self.num_list,red_list=self.red_list)
-class bogobogo_sort(sorting_helper.sorting_algorithm):
-    def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
-        super().__init__(unsorted_list, turt, screen)
-        self.index = 2
-        #self.step_delay = 0.1
-    def check_sorted_list(self,excerpt):
-        checked_list = excerpt
-        for i in range(len(checked_list)-1):
-            if checked_list[i] > checked_list[i+1]:
-                return False
-        
-        print("true")
-        return True
-    def step(self):
-        if self.check_sorted():
-            self.solved = True
-            self.transfer_list_to_buffer(self.num_list,green_list = list(range(len(self.num_list))))
-            return
-        else:
-            excerpt = self.num_list[:self.index]
-            
-            random.shuffle(excerpt)
-            if self.check_sorted_list(excerpt):
-                self.index += 1
-                self.num_list = self.replace_list(self.num_list,excerpt,0)
-            else:
-                self.index = 2
-            
-            #print("list randomized")
-            self.transfer_list_to_buffer(self.num_list,red_list = list(range(self.index)))
-            
 class miracle_sort(sorting_helper.sorting_algorithm):
     def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
         super().__init__(unsorted_list, turt, screen)
@@ -171,8 +139,6 @@ class miracle_sort(sorting_helper.sorting_algorithm):
             self.solved = True
             self.transfer_list_to_buffer(self.num_list,green_list=self.red_list)
         self.transfer_list_to_buffer(self.num_list,red_list=self.red_list)
-        
-        
 class stalin_sort(sorting_helper.sorting_algorithm): #the well loved stalin sort
     def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
         super().__init__(unsorted_list, turt, screen)
@@ -196,8 +162,7 @@ class stalin_sort(sorting_helper.sorting_algorithm): #the well loved stalin sort
             self.green_list.append(self.pointer)
             self.pointer += 1
 
-        self.transfer_list_to_buffer(self.num_list,green_list=self.green_list,red_list=[self.pointer])
-        
+        self.transfer_list_to_buffer(self.num_list,green_list=self.green_list,red_list=[self.pointer])        
 class merge_sort(sorting_helper.sorting_algorithm):
     def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
         super().__init__(unsorted_list, turt, screen)
@@ -400,7 +365,7 @@ class quick_sort(sorting_helper.sorting_algorithm):
             if len(self.job_num_list) == 0:
                 self.currently_dividing = False
                 self.fixed_pivots.append(current_job[0])
-                print(f"appened fixed point (final): {self.fixed_pivots[-1]}")
+                #print(f"appened fixed point (final): {self.fixed_pivots[-1]}")
 
                 del self.job_list[0]
                 self.transfer_list_to_buffer(self.num_list,green_list=self.fixed_pivots)
@@ -437,7 +402,7 @@ class quick_sort(sorting_helper.sorting_algorithm):
                 del self.job_num_list[0]
                 self.currently_dividing = False
                 
-                print
+                #print
                 
                 if len(self.pivot_left) > 0:
                     self.job_list.append((current_job[0],len(self.pivot_left)))
@@ -457,7 +422,7 @@ class quick_sort(sorting_helper.sorting_algorithm):
 
                 self.num_list = self.replace_list(self.num_list,sec_list,current_job[0])
                 self.fixed_pivots.append(current_job[0]+len(self.pivot_left))
-                print(f"appened fixed point (non final): {self.fixed_pivots[-1]}\n{self.pivot_left}")
+                #print(f"appened fixed point (non final): {self.fixed_pivots[-1]}\n{self.pivot_left}")
                 
                 del self.job_list[0]
                 red_list = []
@@ -513,18 +478,7 @@ class quick_sort(sorting_helper.sorting_algorithm):
             self.pivot_left.clear()
             self.pivot_right.clear()
             self.transfer_list_to_buffer(self.num_list,green_list=self.fixed_pivots,red_list=[self.pivot_index])
-                
-                
-                
-                
-                
-                
-                
-            
-            
-            
-        
-       
+
     
 
 
@@ -539,57 +493,44 @@ def init_sorting_algorithm(sorting_type,turtle_instance,screen_instance,length,c
     else:
         new_sort = sorting_type(custom_list,turtle_instance,screen_instance)
         return new_sort
+
+
+class MAIN:
+    def __init__(self):
+        self.current_sized = 20
+        self.time_sum = 0.0
+        self.last_frame_time = time.time()
+        self.current_sort = init_sorting_algorithm(stalin_sort,t,screen,current_sized)
         
-        
-        
+        self.break_out = False
     
-
-
-
-
-
-
-
-current_sized = 400
-size_list = []
-step_count_list = []
-current_sort = init_sorting_algorithm(stalin_sort,t,screen,current_sized)
-
-last_frame_time = time.time()
-time_sum = 0.0
-non_reset_time_sum = 0.0
-while True:
-    current_time = time.time()
-    dt = current_time - last_frame_time
-    last_frame_time = current_time
+    def calculate_dt(self):
+        current_time = time.time()
+        dt = current_time - self.last_frame_time
+        self.last_frame_time = current_time
+        return dt
     
-    time_sum += dt
-    non_reset_time_sum += dt
+    def process(self):
+        dt = self.calculate_dt
+        
+        self.time_sum += dt
 
+
+        if self.time_sum > self.current_sort.step_delay:
+            current_sort.process()
+            time_sum = 0.0
+            time.sleep(0.001)
+        if current_sort.solved:
+
+            print("solved")
+            print(f"step count: {current_sort.step_count}")
+
+
+main_class = MAIN()
+
+while not main_class.break_out:
+    main_class.process()
     
-
-    if time_sum > current_sort.step_delay:
-        #print("frame update")
-        
-        current_sort.process()
-        time_sum = 0.0
-        time.sleep(0.001)
-
-
-    if current_sort.solved:
-        #print(non_reset_time_sum)
-        #size_list.append(current_sized)
-        #step_count_list.append(current_sort.step_count)
-        
-        print("solved")
-        #if current_sized != 100:
-        print(f"Time taken: {non_reset_time_sum}")
-        print(f"step count: {current_sort.step_count}")
-        break
-        #current_sized += 10
-        #current_sort = init_sorting_algorithm(merge_sort,t,screen,current_sized)
-        
-        
 
 
 screen.mainloop()
