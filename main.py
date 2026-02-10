@@ -6,6 +6,9 @@ from enum import Enum
 import is_rearranged
 import sorting_helper # custom script holding the parent class "sorting_algorithm"
 
+import keyboard
+
+
 
 
 class STATES(Enum): #states enum, for future graphical interface
@@ -497,10 +500,10 @@ def init_sorting_algorithm(sorting_type,turtle_instance,screen_instance,length,c
 
 class MAIN:
     def __init__(self):
-        self.current_sized = 20
+        self.current_sized = 200
         self.time_sum = 0.0
         self.last_frame_time = time.time()
-        self.current_sort = init_sorting_algorithm(stalin_sort,t,screen,current_sized)
+        self.current_sort = init_sorting_algorithm(bubble_sort,t,screen,self.current_sized)
         
         self.break_out = False
     
@@ -511,26 +514,36 @@ class MAIN:
         return dt
     
     def process(self):
-        dt = self.calculate_dt
-        
-        self.time_sum += dt
+        print("test")
+        while True:
+            dt = self.calculate_dt()
+            #print("frame")
+            self.time_sum += dt
 
 
-        if self.time_sum > self.current_sort.step_delay:
-            current_sort.process()
-            time_sum = 0.0
-            time.sleep(0.001)
-        if current_sort.solved:
-
-            print("solved")
-            print(f"step count: {current_sort.step_count}")
+            if self.time_sum > self.current_sort.step_delay:
+                self.current_sort.process()
+                time_sum = 0.0
+                time.sleep(0.001)
+            if self.current_sort.solved:
+                return True
+                print("solved")
+                print(f"step count: {current_sort.step_count}")
 
 
 main_class = MAIN()
-
-while not main_class.break_out:
-    main_class.process()
-    
+#main_class.process()
 
 
+def click_tester(x,y):
+    print("do")
+    while not keyboard.is_pressed("W"):
+        pass
+    print("done")
+
+
+print("test")
+
+screen.onscreenclick(fun=click_tester)
+screen.onscreenclick(fun=click_tester,btn=3)
 screen.mainloop()
