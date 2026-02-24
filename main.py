@@ -552,7 +552,7 @@ main_obj = MAIN()
 
 main_obj.Step = True
 INPUT = keyboard_listener(["Right","Space"])
-state = STATES.RUN
+state = STATES.INIT_RUN
 
 
 while True:
@@ -564,7 +564,8 @@ while True:
         case STATES.START:
             pass
         case STATES.INIT_RUN:
-            pass
+            main_obj.process()
+            state = STATES.RUN
         case STATES.RUN:
             if INPUT.key_just_pressed("Space"):
                 main_obj.Step = not main_obj.Step
