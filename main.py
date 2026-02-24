@@ -12,14 +12,34 @@ import keyboard
 
 
 class STATES(Enum): #states enum, for future graphical interface
-    START = 0
-    RUNNING = 1
-    RUNNING_STEP = 2
-    END = 3
+    INIT_START = 0
+    START = 1
+    INIT_RUN = 2
+    RUN = 3
+    END = 4
+
+class keyboard_listener:
+    def __init__(self,listen) -> None:
+        self.listen_list = listen
+        self.held_down = []
+        self.just_down = []
+    
+    def update(self) -> None:
+        self.just_down.clear()
+        for key in self.listen_list:
+            if keyboard.is_pressed(key) and (not key in self.held_down):
+                self.just_down.append(key)
+                self.held_down.append(key)
+            elif (not keyboard.is_pressed(key)) and (key in self.held_down):
+                self.held_down.remove(key)
+    def key_just_pressed(self,key) -> bool:
+        if key in self.just_down:
+            return True
+        else:
+            return False
 
 
-
-state = STATES.START
+state = STATES.INIT_START
 
 
 #init turtle
@@ -33,43 +53,7 @@ t.speed(0)
 screen.tracer(0)
 
 
-class Button:
-    def __init__(self, text, func, x, y, w, h, col1 = "black", col2 = "#ded0ca"):
-        self.text = text
-        self.func = func
-        self.x = x
-        self.y = y
-        self.width = w
-        self.height = h
-        self.col1 = col1
-        self.col2 = col2
-        
-    def mouse_click(self,mouse_x,mouse_y):
-        in_x_range = (self.x + self.width / 2) > mouse_x and (self.x - self.width / 2) < mouse_x
-        in_y_range = (self.y + self.height / 2) > mouse_y and (self.y - self.height / 2) < mouse_y
-        
-        if in_x_range and in_y_range:
-            self.func()
-    
-    def draw_button(self,t:turtle.Turtle):
-        t.up()
-        
-        t.color(self.col1,self.col2)
-        t.goto((self.x - self.width / 2),(self.y + self.height / 2)) # top left corner
-        t.begin_fill()
-        t.down()
-        t.goto((self.x + self.width / 2),(self.y + self.height / 2))#top right
-        t.goto((self.x + self.width / 2),(self.y - self.height / 2))#bottom right
-        t.goto((self.x - self.width / 2),(self.y - self.height / 2))#bottom left
-        t.goto((self.x - self.width / 2),(self.y + self.height / 2))#top left
-        t.end_fill()
-        t.up()
-        t.goto(self.x,self.y)
-        t.write(self.text, align="center")
-        t.up()
-        
-        
-         
+
 
 
 class bubble_sort(sorting_helper.sorting_algorithm): 
@@ -118,7 +102,39 @@ class bubble_sort(sorting_helper.sorting_algorithm):
 
         self.transfer_list_to_buffer(self.num_list,green_list=green_list,red_list=[self.pointer,self.pointer+1]) # function that displays the list
         
-        self.pointer += 1       
+        self.pointer += 1
+
+class insertion_sort(sorting_helper.sorting_algorithm): 
+    def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
+        super().__init__(unsorted_list, turt, screen)
+        #self.step_delay = 0.1
+        self.insert_target = 0
+        self.remaining = self.unsorted_list.copy()[1:]
+        self.num_list.clear()
+        self.num_list.append(self.unsorted_list[0])
+    def step(self):
+        if len(self.remaining) == 0:
+            self.solved = True
+            self.transfer_list_to_buffer(self.num_list, green_list=list(range(len(self.unsorted_list))))
+            return
+            
+        if self.remaining[0] < self.num_list[self.insert_target]:
+            self.num_list.insert(self.insert_target,self.remaining[0])
+            del self.remaining[0]
+            self.insert_target = 0
+        elif self.insert_target == len(self.num_list)-1:
+            self.num_list.append(self.remaining[0])
+            del self.remaining[0]
+            self.insert_target = 0
+        else:
+            self.insert_target += 1
+        
+        #print(f"{self.num_list.copy()}   {self.remaining.copy()}")
+        
+        display_list = self.num_list.copy() + self.remaining.copy()
+        self.transfer_list_to_buffer(display_list, red_list=[self.insert_target,len(self.num_list)])
+           
+        
 class bogo_sort(sorting_helper.sorting_algorithm):
     def __init__(self, unsorted_list, turt: turtle.Turtle, screen):
         super().__init__(unsorted_list, turt, screen)
@@ -503,8 +519,8 @@ class MAIN:
         self.current_sized = 200
         self.time_sum = 0.0
         self.last_frame_time = time.time()
-        self.current_sort = init_sorting_algorithm(bubble_sort,t,screen,self.current_sized)
-        
+        self.current_sort = init_sorting_algorithm(merge_sort,t,screen,self.current_sized)
+        self.Step = False
         self.break_out = False
     
     def calculate_dt(self):
@@ -515,35 +531,57 @@ class MAIN:
     
     def process(self):
         print("test")
-        while True:
-            dt = self.calculate_dt()
+        dt = self.calculate_dt()
             #print("frame")
-            self.time_sum += dt
+        self.time_sum += dt
 
 
-            if self.time_sum > self.current_sort.step_delay:
-                self.current_sort.process()
-                time_sum = 0.0
-                time.sleep(0.001)
-            if self.current_sort.solved:
-                return True
-                print("solved")
-                print(f"step count: {current_sort.step_count}")
+        if self.time_sum > self.current_sort.step_delay and not self.Step:
+            self.current_sort.process()
+            time_sum = 0.0
+            time.sleep(0.001)
+        if self.Step:
+            self.current_sort.process()
+        if self.current_sort.solved:
+            self.break_out = True
+            print("solved")
+            print(f"step count: {self.current_sort.step_count}")
 
 
-main_class = MAIN()
-#main_class.process()
+main_obj = MAIN()
+
+main_obj.Step = True
+INPUT = keyboard_listener(["Right","Space"])
+state = STATES.RUN
 
 
-def click_tester(x,y):
-    print("do")
-    while not keyboard.is_pressed("W"):
-        pass
-    print("done")
+while True:
+    INPUT.update()
+     
+    match state:
+        case STATES.INIT_START:
+            pass
+        case STATES.START:
+            pass
+        case STATES.INIT_RUN:
+            pass
+        case STATES.RUN:
+            if INPUT.key_just_pressed("Space"):
+                main_obj.Step = not main_obj.Step
+            if not main_obj.Step:
+                main_obj.process()
+            else:
+                if INPUT.key_just_pressed("Right"):
+                    main_obj.process()
 
+            if main_obj.break_out:
+                state = STATES.END
+                
+        case STATES.END:
+            pass
 
-print("test")
+    screen.update()
 
-screen.onscreenclick(fun=click_tester)
-screen.onscreenclick(fun=click_tester,btn=3)
-screen.mainloop()
+#screen.onscreenclick(fun=click_handler)
+
+#screen.mainloop()
