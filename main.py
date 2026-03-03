@@ -44,16 +44,67 @@ state = STATES.INIT_START
 
 #init turtle
 screen = turtle.Screen()
-t = turtle.Turtle()
+
 screen.screensize(600, 400, "lightblue")
 #t.color("black", "lime")
+t = turtle.Turtle()
 t.ht()
 t.pensize(2)
 t.speed(0)
 screen.tracer(0)
 
 
-
+class draw:
+    def __init__(self,t):
+        self.turt = t
+    
+    
+    def draw_rect(self,x,y,width,height,fill=False,primary_colour="black",secondary_colour="white"):
+        halfWidth = width/2
+        halfHeight = height/2
+        self.turt.color(primary_colour,secondary_colour) 
+        self.turt.up()
+        self.turt.goto(x+halfWidth,y+halfHeight)
+        if fill:
+            self.turt.begin_fill()
+        
+        self.turt.down()
+        self.turt.goto(x+halfWidth,y-halfHeight)
+        self.turt.goto(x-halfWidth,y-halfHeight)
+        self.turt.goto(x-halfWidth,y+halfHeight)
+        self.turt.goto(x+halfWidth,y+halfHeight)
+        if fill:
+            self.turt.end_fill()
+        self.turt.up()
+    def draw_polygon(self,point_list:list,fill=False,primary_colour="black",secondary_colour="white"):
+        point_amount = len(point_list)
+        if point_amount >= 0 and point_amount < 3:
+            return
+        
+        self.turt.color(primary_colour,secondary_colour) 
+        self.turt.up()
+        self.turt.goto(point_list[0][0],point_list[0][1])
+        
+        
+        if fill:
+            self.turt.begin_fill()
+        self.turt.down()
+        for i in range(1,point_amount):
+            x, y = point_list[i]
+            self.turt.goto(x,y)
+        self.turt.goto(point_list[0][0],point_list[0][1])
+        
+        if fill:
+            self.turt.end_fill()
+        self.turt.up()
+    
+    def draw_text(self,x,y,text):
+        self.turt.up()
+        self.turt.goto(x,y)
+        t.write(text, align="center", font=("Courier", 20, "bold"))
+        
+        
+        
 
 
 class bubble_sort(sorting_helper.sorting_algorithm): 
@@ -552,7 +603,18 @@ main_obj = MAIN()
 
 main_obj.Step = True
 INPUT = keyboard_listener(["Right","Space"])
-state = STATES.INIT_RUN
+state = STATES.INIT_START
+
+uiTurtle = turtle.Turtle()
+uiTurtle.ht()
+uiTurtle.pensize(2)
+uiTurtle.speed(0)
+
+
+ui = draw(uiTurtle)
+
+uiElements = []
+uiPointer = 0
 
 
 while True:
@@ -560,7 +622,9 @@ while True:
      
     match state:
         case STATES.INIT_START:
-            pass
+            ui.draw_rect(-250,0,300,450,fill=True)
+            ui.draw_rect(-250,0,300,450,fill=True)
+            ui.draw_rect(-250,0,300,450,fill=True)
         case STATES.START:
             pass
         case STATES.INIT_RUN:
