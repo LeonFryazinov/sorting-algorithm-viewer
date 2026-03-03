@@ -98,10 +98,12 @@ class draw:
             self.turt.end_fill()
         self.turt.up()
     
-    def draw_text(self,x,y,text):
+    def draw_text(self,x=100,y=100,text="test"):
         self.turt.up()
         self.turt.goto(x,y)
-        t.write(text, align="center", font=("Courier", 20, "bold"))
+        self.turt.down()
+        t.write(text, align="Center", font=("Courier", 20, "bold"))
+        self.turt.up()
         
         
         
@@ -622,9 +624,15 @@ while True:
      
     match state:
         case STATES.INIT_START:
-            ui.draw_rect(-250,0,300,450,fill=True)
-            ui.draw_rect(-250,0,300,450,fill=True)
-            ui.draw_rect(-250,0,300,450,fill=True)
+            ui.draw_rect(-150,0,300,450,fill=True)
+            ui.draw_rect(100,155,200,140,fill=True)
+            ui.draw_rect(100,12,200,140,fill=True)
+            ui.draw_rect(100,-150,200,140,fill=True)
+            ui.draw_text()
+            #ui.draw_text(-500,-5,"Sorting algorithm selection")
+            #ui.draw_text(100,60,"List length")
+            #ui.draw_text(100,0,"Init step")
+            #ui.draw_text(100,-60,"start")
         case STATES.START:
             pass
         case STATES.INIT_RUN:
