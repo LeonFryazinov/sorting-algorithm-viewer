@@ -98,11 +98,11 @@ class draw:
             self.turt.end_fill()
         self.turt.up()
     
-    def draw_text(self,x=100,y=100,text="test"):
+    def draw_text(self,x,y,text,font_size = 20):
         self.turt.up()
         self.turt.goto(x,y)
         self.turt.down()
-        t.write(text, align="Center", font=("Courier", 20, "bold"))
+        self.turt.write(text, align="Center", font=("Courier", font_size, "bold"))
         self.turt.up()
         
         
@@ -604,9 +604,10 @@ class MAIN:
 main_obj = MAIN()
 
 main_obj.Step = True
-INPUT = keyboard_listener(["Right","Space"])
+INPUT = keyboard_listener(["Right","Space","Left","Up","Down","Enter"])
 state = STATES.INIT_START
 
+numINPUT = keyboard_listener(["1","2","3","4","5","6","7","8","9","0","Backspace"])
 uiTurtle = turtle.Turtle()
 uiTurtle.ht()
 uiTurtle.pensize(2)
@@ -615,26 +616,83 @@ uiTurtle.speed(0)
 
 ui = draw(uiTurtle)
 
-uiElements = []
-uiPointer = 0
+sortingAlgorithms = [("Bubble sort",bubble_sort),("Insertion sort",insertion_sort), ("Merge sort",merge_sort), ("Quick sort", quick_sort), ("Miracle sort",  miracle_sort), ("Bogo sort", bogo_sort), ("Stalin sort", stalin_sort)]
+uiPointer = 1
+algSelected = 0
+listLen = 10
 
 
+def draw_start(uiSelected,algSelected,listLen,stepping):
+    ui.draw_rect(-160,0,300,450,fill=True)
+    ui.draw_rect(110,155,200,140,fill=True,secondary_colour="#1fe0ca" if uiSelected == 1 else "white")
+    ui.draw_rect(110,12,200,140,fill=True,secondary_colour="#1fe0ca" if uiSelected == 2 else "white")
+    ui.draw_rect(110,-150,200,140,fill=True,secondary_colour="#1fe0ca" if uiSelected == 3 else "white")
+    
+    boxAmount = len(sortingAlgorithms)
+    boxHeight = 450/boxAmount
+    
+    fontSize = round(boxHeight*0.3)
+    
+    
+    for i, alg in enumerate(sortingAlgorithms):
+        
+        text, class_name = alg
+        ui.draw_rect(-160,(225-(i*boxHeight)-(boxHeight/2)),300,boxHeight,fill=True,secondary_colour="#1fe0ca" if (algSelected == i and uiSelected == 0) else "#119989" if algSelected == i and uiSelected != 0 else "white")
+        ui.draw_text(-160,(225-(i*boxHeight)-(boxHeight/2)-fontSize/2), text, font_size=fontSize)
+    
+    
+    ui.draw_text(110,180, "List length: ", font_size=15)
+    ui.draw_text(110,120, str(listLen), font_size=25)
+    
+    ui.draw_text(110,0,"Stepping" if stepping else "not Stepping", font_size = 25 if stepping else 18)
+    ui.draw_text(110,-170,"Start",font_size = 25)
+
+
+    
+    
 while True:
     INPUT.update()
      
     match state:
         case STATES.INIT_START:
-            ui.draw_rect(-150,0,300,450,fill=True)
-            ui.draw_rect(100,155,200,140,fill=True)
-            ui.draw_rect(100,12,200,140,fill=True)
-            ui.draw_rect(100,-150,200,140,fill=True)
-            ui.draw_text()
-            #ui.draw_text(-500,-5,"Sorting algorithm selection")
-            #ui.draw_text(100,60,"List length")
-            #ui.draw_text(100,0,"Init step")
-            #ui.draw_text(100,-60,"start")
+            draw_start(uiPointer,algSelected,listLen,main_obj.Step)
+            #ui.draw_text()
+            state = STATES.START
+            
         case STATES.START:
-            pass
+            match uiPointer:
+                case 0:
+                    pass
+                case 1:
+                    numINPUT.update()
+                    
+                    
+                    
+                    
+                    for i in range(10):
+                        if numINPUT.key_just_pressed(str(i)):
+                            listLen = (listLen * 10) + i
+                    
+                    if numINPUT.key_just_pressed("Backspace"):
+                        listLen = listLen // 10
+                    
+                    if INPUT.key_just_pressed("Down"):
+                        uiPointer = 2
+                    if Input.key_just_pressed("Left"):
+                        uiPointer = 0
+                    if Input.key_just_pressed("Right"):
+                        uiPointer = 3
+                    
+                    ui.clear()
+                    draw_start(uiPointer,algSelected,listLen,main_obj.Step)
+                    
+                    
+                    
+                case 2:
+                    pass
+                case 3:
+                    pass
+                 
         case STATES.INIT_RUN:
             main_obj.process()
             state = STATES.RUN
