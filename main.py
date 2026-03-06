@@ -58,6 +58,8 @@ class draw:
     def __init__(self,t):
         self.turt = t
     
+    def clear(self):
+        self.turt.clear()
     
     def draw_rect(self,x,y,width,height,fill=False,primary_colour="black",secondary_colour="white"):
         halfWidth = width/2
@@ -572,7 +574,7 @@ class MAIN:
         self.current_sized = 200
         self.time_sum = 0.0
         self.last_frame_time = time.time()
-        self.current_sort = init_sorting_algorithm(merge_sort,t,screen,self.current_sized)
+        self.current_sort = init_sorting_algorithm(bubble_sort,t,screen,self.current_sized)
         self.Step = False
         self.break_out = False
     
@@ -583,7 +585,7 @@ class MAIN:
         return dt
     
     def process(self):
-        print("test")
+        #print("test")
         dt = self.calculate_dt()
             #print("frame")
         self.time_sum += dt
@@ -603,7 +605,7 @@ class MAIN:
 
 main_obj = MAIN()
 
-main_obj.Step = True
+main_obj.Step = False
 INPUT = keyboard_listener(["Right","Space","Left","Up","Down","Enter"])
 state = STATES.INIT_START
 
@@ -617,9 +619,9 @@ uiTurtle.speed(0)
 ui = draw(uiTurtle)
 
 sortingAlgorithms = [("Bubble sort",bubble_sort),("Insertion sort",insertion_sort), ("Merge sort",merge_sort), ("Quick sort", quick_sort), ("Miracle sort",  miracle_sort), ("Bogo sort", bogo_sort), ("Stalin sort", stalin_sort)]
-uiPointer = 1
+uiPointer = 0
 algSelected = 0
-listLen = 10
+listLen = 20
 
 
 def draw_start(uiSelected,algSelected,listLen,stepping):
@@ -662,38 +664,69 @@ while True:
         case STATES.START:
             match uiPointer:
                 case 0:
-                    pass
+                    if INPUT.key_just_pressed("Up") and algSelected != 0:
+                        algSelected -= 1
+                    if INPUT.key_just_pressed("Down") and algSelected != len(sortingAlgorithms)-1:
+                        algSelected += 1
+                    if INPUT.key_just_pressed("Left"):
+                        uiPointer = 3
+                    if INPUT.key_just_pressed("Right"):
+                        uiPointer = 1
                 case 1:
                     numINPUT.update()
                     
-                    
+                    if INPUT.key_just_pressed("Down"):
+                        uiPointer = 2
+                    if INPUT.key_just_pressed("Left"):
+                        uiPointer = 0
+                    if INPUT.key_just_pressed("Right"):
+                        uiPointer = 3
                     
                     
                     for i in range(10):
-                        if numINPUT.key_just_pressed(str(i)):
-                            listLen = (listLen * 10) + i
+                        if numINPUT.key_just_pressed(str(i)) and listLen < 100 and uiPointer == 1:
+                            if not (keyboard.is_pressed("Right") or keyboard.is_pressed("Left") or keyboard.is_pressed("Up") or keyboard.is_pressed("Down")):
+                                listLen = (listLen * 10) + i
+                                #print(i)
                     
                     if numINPUT.key_just_pressed("Backspace"):
                         listLen = listLen // 10
                     
-                    if INPUT.key_just_pressed("Down"):
-                        uiPointer = 2
-                    if Input.key_just_pressed("Left"):
-                        uiPointer = 0
-                    if Input.key_just_pressed("Right"):
-                        uiPointer = 3
                     
-                    ui.clear()
-                    draw_start(uiPointer,algSelected,listLen,main_obj.Step)
+                    
+                    
                     
                     
                     
                 case 2:
-                    pass
+                    if INPUT.key_just_pressed("Down"):
+                        uiPointer = 3
+                    if INPUT.key_just_pressed("Left"):
+                        uiPointer = 0
+                    if INPUT.key_just_pressed("Up"):
+                        uiPointer = 1
+                    
+                    if INPUT.key_just_pressed("Enter") or INPUT.key_just_pressed("Space"):
+                        main_obj.Step = not main_obj.Step
+                        
                 case 3:
-                    pass
-                 
+                    if INPUT.key_just_pressed("Up"):
+                        uiPointer = 2
+                    if INPUT.key_just_pressed("Left"):
+                        uiPointer = 0
+
+                    
+                    if INPUT.key_just_pressed("Enter") or INPUT.key_just_pressed("Space"):
+                        main_obj.current_sized = listLen if listLen > 0 else 20
+                        main_obj.current_sort = init_sorting_algorithm(sortingAlgorithms[algSelected][1],t,screen,main_obj.current_sized)
+                        state = STATES.INIT_RUN
+                    
+            
+            ui.clear()
+            draw_start(uiPointer,algSelected,listLen,main_obj.Step)
         case STATES.INIT_RUN:
+            ui.clear()
+            main_obj.break_out = False
             main_obj.process()
             state = STATES.RUN
         case STATES.RUN:
@@ -709,7 +742,10 @@ while True:
                 state = STATES.END
                 
         case STATES.END:
-            pass
+            if INPUT.key_just_pressed("Enter") or INPUT.key_just_pressed("Space"):
+                state = STATES.INIT_START
+                uiPointer = 0
+                t.clear()
 
     screen.update()
 
