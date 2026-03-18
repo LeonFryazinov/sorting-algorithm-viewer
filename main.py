@@ -349,12 +349,13 @@ class merge_sort(sorting_helper.sorting_algorithm):
             a_start = current_job[0]
             b_start = a_start + a_size
             
+            self.transfer_list_to_buffer(self.num_list,red_list=list(range(current_job[0],current_job[0]+current_job[1])))
             
             del self.job_list[self.job_pointer]
             
             self.job_list.insert(self.job_pointer, (b_start,b_size,1 if b_size == 1 else 0))
             self.job_list.insert(self.job_pointer, (a_start,a_size,1 if a_size == 1 else 0))
-            
+            return
             # render these changes
         
             
