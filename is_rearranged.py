@@ -1,6 +1,4 @@
 
-
-
 def is_rearranged(list_1, list_2):
     #print(len(list_1))
     #print(len(list_2))
